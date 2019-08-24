@@ -1,6 +1,6 @@
 # Reminder Telegram Bot in Node.JS, using Telegraf
 
-![image](http://i.imgur.com/AjAH2kZ.png)
+![image](http://i.imgur.com/brZuWj5.png)
 
 This bot is used for your household needs. It reminds you on the groupchat whenever some recurring chore is not done in specific time. 
 
