@@ -1,9 +1,13 @@
-const Telegraf = require("telegraf"); // Module to use Telegraf API.
-const { Extra, Markup } = Telegraf; // Extract Extra, Markups from Telegraf module.
-const config = require("./config"); // Configuration file that holds telegraf_token API key.
+import Telegraf, { Extra, Markup } from "telegraf"; // Module to use Telegraf API.
+
 const low = require("lowdb"); // Our json database
 const FileSync = require("lowdb/adapters/FileSync");
 const CronJob = require("cron").CronJob;
+
+import getLastBio from "./functions/getLastBio";
+import getLastKukat from "./functions/getLastKukat";
+
+const config = require("./config");
 
 // reminder settings
 
@@ -16,7 +20,7 @@ moment.locale("fi");
 
 // init db
 const adapter = new FileSync(config.dbPath);
-const db = low(adapter);
+export const db = low(adapter);
 db.defaults({ bio: [], kukat: [] }).write();
 
 console.log(db.getState());
@@ -32,24 +36,6 @@ function addKukat(timestamp, user) {
   db.get("kukat")
     .push({ timestamp, user })
     .write();
-}
-
-function getLastBio() {
-  return db
-    .get("bio")
-    .sortBy("timestamp")
-    .reverse()
-    .take(1)
-    .value()[0];
-}
-
-function getLastKukat() {
-  return db
-    .get("kukat")
-    .sortBy("timestamp")
-    .reverse()
-    .take(1)
-    .value()[0];
 }
 
 // cron
@@ -118,9 +104,8 @@ bot.command("start", ctx => ctx.reply("Let's a go!"));
 
 // Helpful command for parsing the chatID that is required for broadcasting messages
 bot.command("info", ctx => {
-  ctx.reply(ctx.chat.id);
+  ctx.reply(ctx.chat.id.toString());
 });
-
 
 bot.command("bio", ctx => {
   // check auth
