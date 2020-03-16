@@ -1,4 +1,4 @@
-import { db } from "../bot";
+import { db } from "../index";
 
 export default function getLastKukat() {
   return db

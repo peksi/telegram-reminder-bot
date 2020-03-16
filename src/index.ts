@@ -1,13 +1,12 @@
-import Telegraf, { Extra, Markup } from "telegraf"; // Module to use Telegraf API.
-
 const low = require("lowdb"); // Our json database
 const FileSync = require("lowdb/adapters/FileSync");
 const CronJob = require("cron").CronJob;
 
+import Telegraf from "telegraf"; // Module to use Telegraf API.
 import getLastBio from "./functions/getLastBio";
 import getLastKukat from "./functions/getLastKukat";
 
-const config = require("./config");
+import config from "./config";
 
 // reminder settings
 
@@ -15,7 +14,7 @@ const MAX_BIO_DAYS = 5;
 const MAX_KUKKA_DAYS = 7;
 
 // time handling
-const moment = require("moment");
+import moment = require("moment");
 moment.locale("fi");
 
 // init db
@@ -26,13 +25,13 @@ db.defaults({ bio: [], kukat: [] }).write();
 console.log(db.getState());
 
 // db functions
-function addBio(timestamp, user) {
+function addBio(timestamp: number, user) {
   db.get("bio")
     .push({ timestamp, user })
     .write();
 }
 
-function addKukat(timestamp, user) {
+function addKukat(timestamp: number, user) {
   db.get("kukat")
     .push({ timestamp, user })
     .write();
