@@ -7,6 +7,7 @@ import getLastBio from "./functions/getLastBio";
 import getLastKukat from "./functions/getLastKukat";
 
 import config from "./config";
+import help from "./functions/help";
 
 // reminder settings
 
@@ -25,13 +26,13 @@ db.defaults({ bio: [], kukat: [] }).write();
 console.log(db.getState());
 
 // db functions
-function addBio(timestamp: number, user) {
+function addBio(timestamp: number, user: string) {
   db.get("bio")
     .push({ timestamp, user })
     .write();
 }
 
-function addKukat(timestamp: number, user) {
+function addKukat(timestamp: number, user: string) {
   db.get("kukat")
     .push({ timestamp, user })
     .write();
@@ -76,12 +77,15 @@ function checkKukat() {
 }
 
 // auth
-function authenticateUser(userId) {
+export function authenticateUser(userId: number) {
   const users = config.users;
-
-  if (users.includes(parseInt(userId))) {
+  console.log("users", users);
+  console.log("userId", userId);
+  if (users.includes(userId)) {
+    console.log("user is included");
     return true;
   } else {
+    console.log("user is not included");
     return false;
   }
 }
@@ -105,6 +109,8 @@ bot.command("start", ctx => ctx.reply("Let's a go!"));
 bot.command("info", ctx => {
   ctx.reply(ctx.chat.id.toString());
 });
+
+bot.command("apuva", ctx => help(ctx));
 
 bot.command("bio", ctx => {
   // check auth
