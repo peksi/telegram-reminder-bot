@@ -6,7 +6,7 @@ import Telegraf from "telegraf"; // Module to use Telegraf API.
 import getLastBio from "./functions/getLastBio";
 import getLastKukat from "./functions/getLastKukat";
 
-import config from "./config";
+import config from "../config";
 import help from "./functions/help";
 
 // reminder settings
@@ -107,7 +107,14 @@ bot.command("start", ctx => ctx.reply("Let's a go!"));
 
 // Helpful command for parsing the chatID that is required for broadcasting messages
 bot.command("info", ctx => {
-  ctx.reply(ctx.chat.id.toString());
+  const from = ctx.update.message.from;
+
+  ctx.reply(
+    "Sinun userId on " +
+      from.id +
+      "\nTämän chatin id on " +
+      ctx.chat.id.toString()
+  );
 });
 
 bot.command("apuva", ctx => help(ctx));

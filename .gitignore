@@ -65,6 +65,7 @@ typings/
 # START: Project files
 
 config.js
+config.ts
 
 db.json
 
