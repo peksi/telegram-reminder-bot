@@ -5,6 +5,7 @@ const CronJob = require("cron").CronJob;
 import Telegraf from "telegraf"; // Module to use Telegraf API.
 import getLastBio from "./functions/getLastBio";
 import getLastKukat from "./functions/getLastKukat";
+import addChore from "./functions/addChore";
 
 import config from "../config";
 import help from "./functions/help";
@@ -16,6 +17,7 @@ const MAX_KUKKA_DAYS = 7;
 
 // time handling
 import moment = require("moment");
+import { Chore } from "./types";
 moment.locale("fi");
 
 // init db
@@ -97,6 +99,7 @@ const BROADCAST_CHAT_ID = config.broadcastChatId;
 // We can get bot nickname from bot informations. This is particularly useful for groups.
 bot.telegram.getMe().then(bot_informations => {
   bot.options.username = bot_informations.username;
+  console.log("haloo");
   console.log(
     "Server has initialized bot nickname. Nick: " + bot_informations.username
   );
@@ -118,37 +121,14 @@ bot.command("info", ctx => {
 });
 
 bot.command("apuva", ctx => help(ctx));
+bot.command("apk", ctx => addChore(ctx, Chore.Apk));
+bot.command("bio", ctx => addChore(ctx, Chore.Bio));
+bot.command("roskat", ctx => addChore(ctx, Chore.Roskat));
+bot.command("pullot", ctx => addChore(ctx, Chore.Pullot));
+bot.command("astiakaappi", ctx => addChore(ctx, Chore.Astiakaappi));
+bot.command("kukat", ctx => addChore(ctx, Chore.Kukat));
+bot.command("pyyhkeet", ctx => addChore(ctx, Chore.Pyyhkeet));
 
-bot.command("bio", ctx => {
-  // check auth
-  const from = ctx.update.message.from;
-  if (!authenticateUser(from.id)) {
-    console.log("Tunkeutuja!");
-    ctx.reply("Hei, käyttäjä " + from.id + ". Sinä et taida kuulua tänne.");
-    return;
-  }
-
-  addBio(Date.now(), from.first_name);
-
-  ctx.reply(
-    "Hyvä homma " +
-      from.first_name +
-      "! Muistuttelen uudestaan viiden päivän kuluttua"
-  );
-});
-bot.command("kukat", ctx => {
-  // check auth
-  const from = ctx.update.message.from;
-  if (!authenticateUser(from.id)) {
-    console.log("Tunkeutuja!");
-    ctx.reply("Hei, käyttäjä " + from.id + ". Sinä et taida kuulua tänne.");
-    return;
-  }
-
-  addKukat(Date.now(), from.first_name);
-
-  ctx.reply("Kiitos " + from.first_name + "! Viikon päästä uudestaan?");
-});
 bot.command("boogie", ctx => {
   // get stats
   const lastBio = getLastBio();
