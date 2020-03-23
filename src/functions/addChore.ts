@@ -1,13 +1,26 @@
-import { authenticateUser } from "..";
+import { authenticateUser, db } from "..";
 import { ContextMessageUpdate } from "telegraf";
-import { Chore } from "../types";
+import { Chore, getChorePoints } from "../chores";
 
 const addChore = (ctx: ContextMessageUpdate, chore: Chore) => {
-  console.log("hereee");
-  console.log(Chore);
   const from = ctx.update.message.from;
   if (authenticateUser(from.id)) {
-    return ctx.reply(`Oih! Kiitos paljon ${from.first_name}`);
+    const points = getChorePoints(chore);
+
+    console.log({
+      timestamp: Date.now(),
+      user: from.first_name,
+      points,
+      chore
+    });
+
+    db.get("tasks")
+      .push({ timestamp: Date.now(), user: from.first_name, points, chore })
+      .write();
+
+    return ctx.reply(
+      `Oih! Kiitos paljon ${from.first_name}. Tästä saat ${points} pistettä.`
+    );
   }
 };
 

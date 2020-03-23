@@ -6,6 +6,7 @@ import Telegraf from "telegraf"; // Module to use Telegraf API.
 import getLastBio from "./functions/getLastBio";
 import getLastKukat from "./functions/getLastKukat";
 import addChore from "./functions/addChore";
+import getStats from "./functions/getStats";
 
 import config from "../config";
 import help from "./functions/help";
@@ -17,13 +18,13 @@ const MAX_KUKKA_DAYS = 7;
 
 // time handling
 import moment = require("moment");
-import { Chore } from "./types";
+import { Chore } from "./chores";
 moment.locale("fi");
 
 // init db
 const adapter = new FileSync(config.dbPath);
 export const db = low(adapter);
-db.defaults({ bio: [], kukat: [] }).write();
+db.defaults({ tasks: [] }).write();
 
 console.log(db.getState());
 
@@ -99,7 +100,6 @@ const BROADCAST_CHAT_ID = config.broadcastChatId;
 // We can get bot nickname from bot informations. This is particularly useful for groups.
 bot.telegram.getMe().then(bot_informations => {
   bot.options.username = bot_informations.username;
-  console.log("haloo");
   console.log(
     "Server has initialized bot nickname. Nick: " + bot_informations.username
   );
@@ -128,6 +128,8 @@ bot.command("pullot", ctx => addChore(ctx, Chore.Pullot));
 bot.command("astiakaappi", ctx => addChore(ctx, Chore.Astiakaappi));
 bot.command("kukat", ctx => addChore(ctx, Chore.Kukat));
 bot.command("pyyhkeet", ctx => addChore(ctx, Chore.Pyyhkeet));
+
+bot.command("stats", ctx => getStats(ctx));
 
 bot.command("boogie", ctx => {
   // get stats
