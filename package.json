@@ -13,9 +13,12 @@
     "lodash": "^4.17.15",
     "lowdb": "^1.0.0",
     "moment": "^2.24.0",
-    "telegraf": "^3.6.4"
+    "telegraf": "^3.6.4",
+    "tsc": "^1.20150623.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Finalgalaxy/telegram-telegraf-bot.git"
