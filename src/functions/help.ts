@@ -13,8 +13,8 @@ const help = (ctx: ContextMessageUpdate) => {
         "/astiakaappi tyhjennys 3p \n" +
         "/kukat kukkien kastelu 3p \n" +
         "/pyyhkeet käsipyyhkeiden pesu 5p \n" +
-        "/rakasta <henkilö>  kerää jonkun muun jälkiä 2p \n" +
-        "/nosto <henkilö> 1p. huomionarvoinen ei-rekisteröity rakkaudenosoitus jonka voi antaa toiselle \n" +
+        // "/rakasta <henkilö>  kerää jonkun muun jälkiä 2p \n" +
+        // "/nosto <henkilö> 1p. huomionarvoinen ei-rekisteröity rakkaudenosoitus jonka voi antaa toiselle \n" +
         "/statsit scoreboard \n"
     );
   }

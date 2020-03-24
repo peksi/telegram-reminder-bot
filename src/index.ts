@@ -13,8 +13,8 @@ import help from "./functions/help";
 
 // reminder settings
 
-const MAX_BIO_DAYS = 5;
-const MAX_KUKKA_DAYS = 7;
+const MAX_BIO_DAYS = 4;
+const MAX_KUKKA_DAYS = 6;
 
 // time handling
 import moment = require("moment");
@@ -28,22 +28,9 @@ db.defaults({ tasks: [] }).write();
 
 console.log(db.getState());
 
-// db functions
-function addBio(timestamp: number, user: string) {
-  db.get("bio")
-    .push({ timestamp, user })
-    .write();
-}
-
-function addKukat(timestamp: number, user: string) {
-  db.get("kukat")
-    .push({ timestamp, user })
-    .write();
-}
-
 // cron
 new CronJob(
-  "00 00 12 * * *",
+  "00 00 17 * * *",
   function() {
     checkBio();
     checkKukat();
@@ -53,29 +40,42 @@ new CronJob(
   "Europe/Helsinki"
 );
 
+checkBio();
+checkKukat();
+
 function checkBio() {
   console.log("lastbio");
-  const daysSinceBio =
-    (Date.now() - getLastBio().timestamp) / 1000 / 60 / 60 / 24;
-  if (daysSinceBio > MAX_BIO_DAYS) {
-    bot.telegram.sendMessage(
-      BROADCAST_CHAT_ID,
-      "Hei nyt jätkät! Bio on haissut jo " +
-        Math.round(daysSinceBio) +
-        " päivää. Olisko aika vaikka tyhjätä?"
-    );
+  try {
+    const daysSinceBio =
+      (Date.now() - getLastBio().timestamp) / 1000 / 60 / 60 / 24;
+    console.log("daysSinceBio", daysSinceBio);
+    if (daysSinceBio > MAX_BIO_DAYS) {
+      bot.telegram.sendMessage(
+        BROADCAST_CHAT_ID,
+        "Hei nyt jätkät! Bio on haissut jo " +
+          Math.round(daysSinceBio) +
+          " päivää. Olisko aika vaikka tyhjätä?"
+      );
+    }
+  } catch (error) {
+    console.log("error", error);
   }
 }
 
 function checkKukat() {
   console.log("lastkukat");
-  const daysSinceKukat =
-    (Date.now() - getLastKukat().timestamp) / 1000 / 60 / 60 / 24;
-  if (daysSinceKukat > MAX_KUKKA_DAYS) {
-    bot.telegram.sendMessage(
-      BROADCAST_CHAT_ID,
-      "Onks meillä enää viherkasveja hengissä? Vettä!"
-    );
+  try {
+    const daysSinceKukat =
+      (Date.now() - getLastKukat().timestamp) / 1000 / 60 / 60 / 24;
+    console.log("daysSinceKukat", daysSinceKukat);
+    if (daysSinceKukat > MAX_KUKKA_DAYS) {
+      bot.telegram.sendMessage(
+        BROADCAST_CHAT_ID,
+        "Onks meillä enää viherkasveja hengissä? Vettä!"
+      );
+    }
+  } catch (error) {
+    console.log("error", error);
   }
 }
 
@@ -136,18 +136,21 @@ bot.command("boogie", ctx => {
   const lastBio = getLastBio();
   const lastKukat = getLastKukat();
 
-  ctx.reply(
-    lastKukat.user +
+  console.log("lastBio", lastBio);
+  console.log("lastKukat", lastKukat);
+
+  const kukatStr = lastKukat
+    ? lastKukat.user +
       " kasteli kukat " +
       moment(lastKukat.timestamp).fromNow() +
-      ".\n" +
-      "Paskimen tyhensi " +
-      moment(lastBio.timestamp).fromNow() +
-      " " +
-      lastBio.user +
-      ". " +
-      (lastKukat.user === lastBio.user ? "\nHyvä " + lastKukat.user + "!" : "")
-  );
+      ".\n"
+    : "Kukaan ei ole vielä kastellut kukkia\n";
+
+  const bioStr = lastBio
+    ? "Bion tyhensi " + moment(lastBio.timestamp).fromNow() + " " + lastBio.user
+    : "Kukaan ei ole vielä vienyt bioa";
+
+  ctx.reply(kukatStr + bioStr);
 });
 
 // Start bot polling in order to not terminate Node.js application.
