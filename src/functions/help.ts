@@ -15,7 +15,7 @@ const help = (ctx: ContextMessageUpdate) => {
         "/pyyhkeet käsipyyhkeiden pesu 5p \n" +
         // "/rakasta <henkilö>  kerää jonkun muun jälkiä 2p \n" +
         // "/nosto <henkilö> 1p. huomionarvoinen ei-rekisteröity rakkaudenosoitus jonka voi antaa toiselle \n" +
-        "/statsit scoreboard \n"
+        "/stats scoreboard \n"
     );
   }
 };
