@@ -18,7 +18,7 @@ const MAX_KUKKA_DAYS = 6;
 
 // time handling
 import moment = require("moment");
-import { Chore } from "./chores";
+import { chores } from "./chores";
 moment.locale("fi");
 
 // init db
@@ -119,15 +119,11 @@ bot.command("info", ctx => {
       ctx.chat.id.toString()
   );
 });
+bot.command('apua', ctx => help(ctx));
 
-bot.command("apuva", ctx => help(ctx));
-bot.command("apk", ctx => addChore(ctx, Chore.Apk));
-bot.command("bio", ctx => addChore(ctx, Chore.Bio));
-bot.command("roskat", ctx => addChore(ctx, Chore.Roskat));
-bot.command("pullot", ctx => addChore(ctx, Chore.Pullot));
-bot.command("astiakaappi", ctx => addChore(ctx, Chore.Astiakaappi));
-bot.command("kukat", ctx => addChore(ctx, Chore.Kukat));
-bot.command("pyyhkeet", ctx => addChore(ctx, Chore.Pyyhkeet));
+chores.forEach(chore => {
+  bot.command(chore.command, ctx => addChore(ctx, chore));
+});
 
 bot.command("stats", ctx => getStats(ctx));
 

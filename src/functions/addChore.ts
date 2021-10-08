@@ -1,11 +1,11 @@
 import { authenticateUser, db } from "..";
 import { ContextMessageUpdate } from "telegraf";
-import { Chore, getChorePoints } from "../chores";
+import { Chore } from "../chores";
 
 const addChore = (ctx: ContextMessageUpdate, chore: Chore) => {
   const from = ctx.update.message.from;
   if (authenticateUser(from.id)) {
-    const points = getChorePoints(chore);
+    const points = chore.points;
 
     console.log({
       timestamp: Date.now(),
