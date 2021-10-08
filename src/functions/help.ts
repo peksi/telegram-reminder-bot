@@ -6,7 +6,7 @@ const help = (ctx: ContextMessageUpdate) => {
   const from = ctx.update.message.from;
   if (authenticateUser(from.id)) {
     return ctx.reply(
-      "Moi! Manny tässä. Autan sua siivoomaan että saadaan koti pidettyy siistinä yhdessä Neaton kanssa.\n\n" +
+      "Moi! Bob tässä. Autan sua siivoomaan että saadaan koti pidettyy siistinä yhdessä Neaton kanssa.\n\n" +
         chores.map(chore => `/${chore.command} ${chore.description} ${chore.points}p`).join('\n')
     );
   }
