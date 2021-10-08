@@ -1,10 +1,8 @@
 import { authenticateUser, db } from "..";
 import { ContextMessageUpdate } from "telegraf";
 const _ = require("lodash");
-
-import getLastBio from "./getLastBio";
-import getLastKukat from "./getLastKukat";
 import moment = require("moment");
+import { getLastChoreDoneTexts } from "../chores";
 
 const getStats = async (ctx: ContextMessageUpdate) => {
   const from = ctx.update.message.from;
@@ -37,31 +35,10 @@ const getStats = async (ctx: ContextMessageUpdate) => {
 
     console.log("scoreBoard", scoreBoard);
 
-    const lastBio = getLastBio();
-    const lastKukat = getLastKukat();
-
-    console.log("lastBio", lastBio);
-    console.log("lastKukat", lastKukat);
-
-    const kukatStr = lastKukat
-      ? lastKukat.user +
-        " kasteli kukat " +
-        moment(lastKukat.timestamp).fromNow() +
-        ".\n"
-      : "Kukaan ei ole vielä kastellut kukkia\n";
-
-    const bioStr = lastBio
-      ? "Bion tyhensi " +
-        moment(lastBio.timestamp).fromNow() +
-        " " +
-        lastBio.user
-      : "Kukaan ei ole vielä vienyt bioa";
-
     // ctx.reply(kukatStr + bioStr);
 
     return ctx.reply(
-      `Täältäpä sataa vähän statseja!\n${scoreBoard.join("")}\n\n${kukatStr +
-        bioStr}`
+      `Täältäpä sataa vähän statseja!\n${scoreBoard.join("")}\n\n${getLastChoreDoneTexts().join('\n')}`
     );
   }
 };

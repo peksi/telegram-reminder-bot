@@ -70,5 +70,6 @@ config.js
 config.ts
 
 db.json
+db/db.json
 
 # END: Project files

@@ -4,7 +4,9 @@
   "description": "Telegram bot example using Telegraf with easy configuration steps. Node v8+.",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node build/src/index.js"
+    "start": "tsc && node build/src/index.js",
+    "build": "tsc",
+    "start_prod": "node build/src/index.js"
   },
   "author": "Finalgalaxy",
   "license": "ISC",
