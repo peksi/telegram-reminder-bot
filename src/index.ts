@@ -87,7 +87,7 @@ bot.command("commands", (ctx: ContextMessageUpdate) => {
               `${chore.command} - ${chore.description} ${chore.points}p`
           )
           .join("\n") +
-        "apua - apua\n" +
+        "\napua - apua\n" +
         "info - näytä chattitiedot\n" +
         "stats - tilastot\n"
     );
