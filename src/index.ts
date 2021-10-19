@@ -2,7 +2,7 @@ const low = require("lowdb"); // Our json database
 const FileSync = require("lowdb/adapters/FileSync");
 const CronJob = require("cron").CronJob;
 
-import Telegraf from "telegraf"; // Module to use Telegraf API.
+import Telegraf, { ContextMessageUpdate } from "telegraf"; // Module to use Telegraf API.
 import addChore from "./functions/addChore";
 import getStats from "./functions/getStats";
 
@@ -15,7 +15,9 @@ import { checkChores, chores, getLastChoreDoneTexts } from "./chores";
 moment.locale("fi");
 
 // init db
-const adapter = new FileSync(process.env.DOCKER ? '/db/db.json' : config.dbPath);
+const adapter = new FileSync(
+  process.env.DOCKER ? "/db/db.json" : config.dbPath
+);
 export const db = low(adapter);
 db.defaults({ tasks: [] }).write();
 
@@ -24,14 +26,13 @@ console.log(db.getState());
 // cron
 new CronJob(
   "00 00 17 * * *",
-  function() {
+  function () {
     checkChores();
   },
   null,
   true,
   "Europe/Helsinki"
 );
-
 
 // auth
 export function authenticateUser(userId: number) {
@@ -52,7 +53,7 @@ export const bot = new Telegraf(config.telegraf_token); // Let's instantiate a b
 const BROADCAST_CHAT_ID = config.broadcastChatId;
 
 // We can get bot nickname from bot informations. This is particularly useful for groups.
-bot.telegram.getMe().then(bot_informations => {
+bot.telegram.getMe().then((bot_informations) => {
   bot.options.username = bot_informations.username;
   console.log(
     "Server has initialized bot nickname. Nick: " + bot_informations.username
@@ -60,10 +61,10 @@ bot.telegram.getMe().then(bot_informations => {
 });
 
 // Simple command to ensure that we're live
-bot.command("start", ctx => ctx.reply("Let's a go!"));
+bot.command("start", (ctx) => ctx.reply("Let's a go!"));
 
 // Helpful command for parsing the chatID that is required for broadcasting messages
-bot.command("info", ctx => {
+bot.command("info", (ctx) => {
   const from = ctx.update.message.from;
 
   ctx.reply(
@@ -73,20 +74,36 @@ bot.command("info", ctx => {
       ctx.chat.id.toString()
   );
 });
-bot.command('apua', ctx => help(ctx));
-
-chores.forEach(chore => {
-  bot.command(chore.command, ctx => addChore(ctx, chore));
+bot.command("apua", (ctx) => help(ctx));
+bot.command("commands", (ctx: ContextMessageUpdate) => {
+  const from = ctx.update.message.from;
+  if (authenticateUser(from.id)) {
+    return ctx.reply(
+      "Komennot BotFatheria varten:\n\n" +
+        chores
+          .sort((a, b) => (a.command > b.command ? 1 : -1))
+          .map(
+            (chore) =>
+              `${chore.command} - ${chore.description} ${chore.points}p`
+          )
+          .join("\n") +
+        "apua - apua\n" +
+        "info - näytä chattitiedot\n" +
+        "stats - tilastot\n"
+    );
+  }
 });
 
-bot.command("stats", ctx => getStats(ctx));
+chores.forEach((chore) => {
+  bot.command(chore.command, (ctx) => addChore(ctx, chore));
+});
 
-bot.command("boogie", ctx => {
+bot.command("stats", (ctx) => getStats(ctx));
+
+bot.command("boogie", (ctx) => {
   // get stats
 
-  
-
-  ctx.reply(getLastChoreDoneTexts().join('\n'));
+  ctx.reply(getLastChoreDoneTexts().join("\n"));
 });
 
 // Start bot polling in order to not terminate Node.js application.
