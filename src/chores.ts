@@ -55,7 +55,7 @@ export const chores: Chore[] = [
     name: "Imuroi",
     command: "imuroi",
     description: "nurkista jne vaikeista paikoista",
-    points: 15,
+    points: 10,
     reminderAfterDays: 14,
     reminderText:
       "Pölyjä kertyny nurkkiin {} päivää. Imurointi ois paikallaan.",
@@ -73,7 +73,7 @@ export const chores: Chore[] = [
     name: "Kukkien kastelu",
     command: "kukat",
     description: "kukkien kastelu",
-    points: 3,
+    points: 5,
     reminderAfterDays: 7,
     reminderText: "Kukat tarviis joskus vettä! Menny {} päivää ilman.",
   },
@@ -87,7 +87,7 @@ export const chores: Chore[] = [
     name: "Vessan siivous",
     command: "wc",
     description: "wc siivous",
-    points: 5,
+    points: 10,
     reminderAfterDays: 14,
     reminderText:
       "Vessa siivottu viimeks {} päivää sitten. Pitäskö putsaa nopee?",
