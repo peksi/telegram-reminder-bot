@@ -84,13 +84,49 @@ export const chores: Chore[] = [
     points: 5,
   },
   {
-    name: "Vessan siivous",
-    command: "wc",
-    description: "wc siivous",
-    points: 10,
-    reminderAfterDays: 14,
+    name: "Suihkun siivous",
+    command: "suihku",
+    description: "suihkun siivous",
+    points: 30,
+    reminderAfterDays: 30,
     reminderText:
-      "Vessa siivottu viimeks {} päivää sitten. Pitäskö putsaa nopee?",
+      "Suihku putsattu viimeks {} päivää sitten. Harja heilumaan?",
+  },
+  {
+    name: "Pytty",
+    command: "pytty",
+    description: "pytyn harjaus ja pölyjen pyyhkiminen",
+    points: 5,
+    reminderAfterDays: 7,
+    reminderText:
+      "Pytty putsattu viimeks {} päivää sitten. Harja heilumaan?",
+  },
+  {
+    name: "Lavuaari",
+    command: "wc",
+    description: "wc lavuaarin siivous (pölypuhdistus ylä- ja alatasot)",
+    points: 5,
+    reminderAfterDays: 7,
+    reminderText:
+      "WC:n lavuaari ja ylä- ja alatasot putsattu {} päivää sitten. Pitäskö putsaa nopee?",
+  },
+  {
+    name: "Lakanat",
+    command: "lakanat",
+    description: "lakanoiden vaihto - sängystä kaikki",
+    points: 5,
+    reminderAfterDays: 21,
+    reminderText:
+      "Lakanat vaihdettu {} päivää sitten. Pitäskö vaihtaa nopee?",
+  },
+  {
+    name: "Keittiö",
+    command: "keitto",
+    description: "hellan ja lavuaarin putsaaminen",
+    points: 5,
+    reminderAfterDays: 7,
+    reminderText:
+      "Keittiön hella ja lavuaari putsattu {} päivää sitten. Pitäskö putsaa nopee?",
   },
 ];
 
@@ -118,7 +154,7 @@ export const checkChores = () => {
           if (daysSinceChore > chore.reminderAfterDays) {
             bot.telegram.sendMessage(
               config.broadcastChatId,
-              chore.reminderText.replace("{}", String(daysSinceChore))
+              chore.reminderText.replace("{}", String(Math.round(daysSinceChore)))
             );
           }
         }
