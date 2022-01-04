@@ -102,7 +102,7 @@ export const chores: Chore[] = [
       "Pytty putsattu viimeks {} päivää sitten. Harja heilumaan?",
   },
   {
-    name: "Lavuaari",
+    name: "WC Lavuaari",
     command: "wc",
     description: "wc lavuaarin siivous (pölypuhdistus ylä- ja alatasot)",
     points: 5,
@@ -121,7 +121,7 @@ export const chores: Chore[] = [
   },
   {
     name: "Keittiö",
-    command: "keitto",
+    command: "keittio",
     description: "hellan ja lavuaarin putsaaminen",
     points: 5,
     reminderAfterDays: 7,
