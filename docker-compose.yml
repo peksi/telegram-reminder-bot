@@ -1,0 +1,11 @@
+version: "3.1"
+
+services:
+  bot:
+    container_name: bot
+    build: ./
+    restart: always
+    environment: 
+      - DOCKER=1
+    volumes: 
+      - ./db/:/db/

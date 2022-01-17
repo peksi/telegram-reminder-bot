@@ -2,27 +2,22 @@ const low = require("lowdb"); // Our json database
 const FileSync = require("lowdb/adapters/FileSync");
 const CronJob = require("cron").CronJob;
 
-import Telegraf from "telegraf"; // Module to use Telegraf API.
-import getLastBio from "./functions/getLastBio";
-import getLastKukat from "./functions/getLastKukat";
+import Telegraf, { ContextMessageUpdate } from "telegraf"; // Module to use Telegraf API.
 import addChore from "./functions/addChore";
 import getStats from "./functions/getStats";
 
 import config from "../config";
 import help from "./functions/help";
 
-// reminder settings
-
-const MAX_BIO_DAYS = 4;
-const MAX_KUKKA_DAYS = 6;
-
 // time handling
 import moment = require("moment");
-import { Chore } from "./chores";
+import { checkChores, chores, getLastChoreDoneTexts } from "./chores";
 moment.locale("fi");
 
 // init db
-const adapter = new FileSync(config.dbPath);
+const adapter = new FileSync(
+  process.env.DOCKER ? "/db/db.json" : config.dbPath
+);
 export const db = low(adapter);
 db.defaults({ tasks: [] }).write();
 
@@ -31,53 +26,13 @@ console.log(db.getState());
 // cron
 new CronJob(
   "00 00 17 * * *",
-  function() {
-    checkBio();
-    checkKukat();
+  function () {
+    checkChores();
   },
   null,
   true,
   "Europe/Helsinki"
 );
-
-checkBio();
-checkKukat();
-
-function checkBio() {
-  console.log("lastbio");
-  try {
-    const daysSinceBio =
-      (Date.now() - getLastBio().timestamp) / 1000 / 60 / 60 / 24;
-    console.log("daysSinceBio", daysSinceBio);
-    if (daysSinceBio > MAX_BIO_DAYS) {
-      bot.telegram.sendMessage(
-        BROADCAST_CHAT_ID,
-        "Hei nyt jätkät! Bio on haissut jo " +
-          Math.round(daysSinceBio) +
-          " päivää. Olisko aika vaikka tyhjätä?"
-      );
-    }
-  } catch (error) {
-    console.log("error", error);
-  }
-}
-
-function checkKukat() {
-  console.log("lastkukat");
-  try {
-    const daysSinceKukat =
-      (Date.now() - getLastKukat().timestamp) / 1000 / 60 / 60 / 24;
-    console.log("daysSinceKukat", daysSinceKukat);
-    if (daysSinceKukat > MAX_KUKKA_DAYS) {
-      bot.telegram.sendMessage(
-        BROADCAST_CHAT_ID,
-        "Onks meillä enää viherkasveja hengissä? Vettä!"
-      );
-    }
-  } catch (error) {
-    console.log("error", error);
-  }
-}
 
 // auth
 export function authenticateUser(userId: number) {
@@ -93,12 +48,12 @@ export function authenticateUser(userId: number) {
   }
 }
 
-const bot = new Telegraf(config.telegraf_token); // Let's instantiate a bot using our token.
+export const bot = new Telegraf(config.telegraf_token); // Let's instantiate a bot using our token.
 
 const BROADCAST_CHAT_ID = config.broadcastChatId;
 
 // We can get bot nickname from bot informations. This is particularly useful for groups.
-bot.telegram.getMe().then(bot_informations => {
+bot.telegram.getMe().then((bot_informations) => {
   bot.options.username = bot_informations.username;
   console.log(
     "Server has initialized bot nickname. Nick: " + bot_informations.username
@@ -106,10 +61,10 @@ bot.telegram.getMe().then(bot_informations => {
 });
 
 // Simple command to ensure that we're live
-bot.command("start", ctx => ctx.reply("Let's a go!"));
+bot.command("start", (ctx) => ctx.reply("Let's a go!"));
 
 // Helpful command for parsing the chatID that is required for broadcasting messages
-bot.command("info", ctx => {
+bot.command("info", (ctx) => {
   const from = ctx.update.message.from;
 
   ctx.reply(
@@ -119,38 +74,36 @@ bot.command("info", ctx => {
       ctx.chat.id.toString()
   );
 });
+bot.command("apua", (ctx) => help(ctx));
+bot.command("commands", (ctx: ContextMessageUpdate) => {
+  const from = ctx.update.message.from;
+  if (authenticateUser(from.id)) {
+    return ctx.reply(
+      "Komennot BotFatheria varten:\n\n" +
+        chores
+          .sort((a, b) => (a.command > b.command ? 1 : -1))
+          .map(
+            (chore) =>
+              `${chore.command} - ${chore.description} ${chore.points}p`
+          )
+          .join("\n") +
+        "\napua - apua\n" +
+        "info - näytä chattitiedot\n" +
+        "stats - tilastot\n"
+    );
+  }
+});
 
-bot.command("apuva", ctx => help(ctx));
-bot.command("apk", ctx => addChore(ctx, Chore.Apk));
-bot.command("bio", ctx => addChore(ctx, Chore.Bio));
-bot.command("roskat", ctx => addChore(ctx, Chore.Roskat));
-bot.command("pullot", ctx => addChore(ctx, Chore.Pullot));
-bot.command("astiakaappi", ctx => addChore(ctx, Chore.Astiakaappi));
-bot.command("kukat", ctx => addChore(ctx, Chore.Kukat));
-bot.command("pyyhkeet", ctx => addChore(ctx, Chore.Pyyhkeet));
+chores.forEach((chore) => {
+  bot.command(chore.command, (ctx) => addChore(ctx, chore));
+});
 
-bot.command("stats", ctx => getStats(ctx));
+bot.command("stats", (ctx) => getStats(ctx));
 
-bot.command("boogie", ctx => {
+bot.command("boogie", (ctx) => {
   // get stats
-  const lastBio = getLastBio();
-  const lastKukat = getLastKukat();
 
-  console.log("lastBio", lastBio);
-  console.log("lastKukat", lastKukat);
-
-  const kukatStr = lastKukat
-    ? lastKukat.user +
-      " kasteli kukat " +
-      moment(lastKukat.timestamp).fromNow() +
-      ".\n"
-    : "Kukaan ei ole vielä kastellut kukkia\n";
-
-  const bioStr = lastBio
-    ? "Bion tyhensi " + moment(lastBio.timestamp).fromNow() + " " + lastBio.user
-    : "Kukaan ei ole vielä vienyt bioa";
-
-  ctx.reply(kukatStr + bioStr);
+  ctx.reply(getLastChoreDoneTexts().join("\n"));
 });
 
 // Start bot polling in order to not terminate Node.js application.
