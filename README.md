@@ -66,3 +66,8 @@ Check Telegraf API: https://github.com/telegraf/telegraf.
 # Credits
 
 [Original project](https://github.com/fabnicolas/telegram-telegraf-bot) by Fabio Crispino aka Finalgalaxy
+
+## Contributors to this reminder bot
+
+* [peksi](https://github.com/peksi/)
+* [ultsi](https://github.com/ultsi/)
