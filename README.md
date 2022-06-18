@@ -16,7 +16,17 @@ NB! The current version has Finnish localization only.
   ![image](http://i.imgur.com/POZq2tq.png)
 - BotFather will provide you an API key. This API key is used to make requests to Telegram API in order to listen messages from your bot user, make bot answer accordingly and much more. Save it for next step.
 
-### Step 2: configure your Node.js application
+
+### Step 2a: set up the application with docker
+
+* `git clone` the repository
+* `cp example.config.ts config.ts` and fill config.ts with your personal info
+   * you get the bot token from the BotFather and chatInfo and userInfo with eq @chatIDrobot
+* customize `src/chores.ts` to your liking
+* `docker-compose up --build -d`
+* use /commands command for bot to list all commands and update them to the botfather
+
+### Step 2b: configure your Node.js application (no docker)
 
 - Create config.js in the repository root with this content. Replace API_TOKEN with the API key you got from BotFather. After that you can start your application and with /info command populate users and broadcast chat id to .config.ts as well.
 
